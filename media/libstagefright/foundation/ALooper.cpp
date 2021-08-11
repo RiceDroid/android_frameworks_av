@@ -193,6 +193,23 @@ void ALooper::post(const sp<AMessage> &msg, int64_t delayUs) {
     mEventQueue.insert(it, event);
 }
 
+void ALooper::postAtFrontOfQueue(const sp<AMessage> &msg) {
+    Mutex::Autolock autoLock(mLock);
+
+    int64_t whenUs = 0;
+    List<Event>::iterator it = mEventQueue.begin();
+
+    Event event;
+    event.mWhenUs = whenUs;
+    event.mMessage = msg;
+
+    if (it == mEventQueue.begin()) {
+        mQueueChangedCondition.signal();
+    }
+
+    mEventQueue.insert(it, event);
+}
+
 bool ALooper::loop() {
     Event event;
 

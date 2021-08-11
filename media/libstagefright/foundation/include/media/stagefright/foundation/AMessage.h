@@ -140,6 +140,7 @@ struct AMessage : public RefBase {
             int32_t *left, int32_t *top, int32_t *right, int32_t *bottom) const;
 
     status_t post(int64_t delayUs = 0);
+    status_t postAtFrontOfQueue();
 
     // Posts the message to its target and waits for a response (or error)
     // before returning.

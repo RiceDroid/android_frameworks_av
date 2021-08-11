@@ -1423,7 +1423,7 @@ void NuPlayer::Renderer::onDrainVideoQueue() {
 
     entry->mNotifyConsumed->setInt64("timestampNs", realTimeUs * 1000LL);
     entry->mNotifyConsumed->setInt32("render", !tooLate);
-    entry->mNotifyConsumed->post();
+    entry->mNotifyConsumed->postAtFrontOfQueue();
     mVideoQueue.erase(mVideoQueue.begin());
     entry = NULL;
 

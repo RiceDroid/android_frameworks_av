@@ -430,6 +430,17 @@ status_t AMessage::post(int64_t delayUs) {
     return OK;
 }
 
+status_t AMessage::postAtFrontOfQueue() {
+    sp<ALooper> looper = mLooper.promote();
+    if (looper == NULL) {
+        ALOGW("failed to post message as target looper for handler %d is gone.", mTarget);
+        return -ENOENT;
+    }
+
+    looper->postAtFrontOfQueue(this);
+    return OK;
+}
+
 status_t AMessage::postAndAwaitResponse(sp<AMessage> *response) {
     sp<ALooper> looper = mLooper.promote();
     if (looper == NULL) {

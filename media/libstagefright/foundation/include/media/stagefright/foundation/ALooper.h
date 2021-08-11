@@ -90,6 +90,7 @@ private:
     // posts a message on this looper with the given timeout
     void post(const sp<AMessage> &msg, int64_t delayUs);
 
+    void postAtFrontOfQueue(const sp<AMessage> &msg);
     // creates a reply token to be used with this looper
     sp<AReplyToken> createReplyToken();
     // waits for a response for the reply token.  If status is OK, the response
