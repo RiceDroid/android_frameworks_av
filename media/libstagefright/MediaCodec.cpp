@@ -4929,6 +4929,7 @@ status_t MediaCodec::onQueueInputBuffer(const sp<AMessage> &msg) {
         offset = buffer->offset();
         size = buffer->size();
         if (err != OK) {
+            ALOGI("block model buffer attach failed: err = %d", err);
             return err;
         }
     }

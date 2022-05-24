@@ -438,6 +438,10 @@ status_t CCodecBufferChannel::attachEncryptedBuffer(
     for (size_t i = 0; i < numSubSamples; ++i) {
         size += subSamples[i].mNumBytesOfClearData + subSamples[i].mNumBytesOfEncryptedData;
     }
+    if (size == 0) {
+        buffer->setRange(0, 0);
+        return OK;
+    }
     std::shared_ptr<C2BlockPool> pool = mBlockPools.lock()->inputPool;
     std::shared_ptr<C2LinearBlock> block;
     c2_status_t err = pool->fetchLinearBlock(
@@ -445,6 +449,8 @@ status_t CCodecBufferChannel::attachEncryptedBuffer(
             secure ? kSecureUsage : kDefaultReadWriteUsage,
             &block);
     if (err != C2_OK) {
+        ALOGI("fetchLinearBlock failed: size = %zu (%s) err = %d",
+              size, secure ? "secure" : "non-secure", err);
         return NO_MEMORY;
     }
     if (!secure) {
@@ -469,15 +475,18 @@ status_t CCodecBufferChannel::attachEncryptedBuffer(
                 key, iv, mode, pattern, src, 0, subSamples, numSubSamples,
                 dst, &errorDetailMsg);
         if (result < 0) {
+            ALOGI("decrypt failed: result = %zd", result);
             return result;
         }
         if (dst.type == DrmBufferType::SHARED_MEMORY) {
             C2WriteView view = block->map().get();
             if (view.error() != C2_OK) {
-                return false;
+                ALOGI("block map error: %d", view.error());
+                return UNKNOWN_ERROR;
             }
             if (view.size() < result) {
-                return false;
+                ALOGI("block size too small: size=%u result=%zd", view.size(), result);
+                return UNKNOWN_ERROR;
             }
             memcpy(view.data(), mDecryptDestination->unsecurePointer(), result);
         }
@@ -536,9 +545,11 @@ status_t CCodecBufferChannel::attachEncryptedBuffer(
     if (!secure) {
         C2WriteView view = block->map().get();
         if (view.error() != C2_OK) {
+            ALOGI("block map error: %d", view.error());
             return UNKNOWN_ERROR;
         }
         if (view.size() < result) {
+            ALOGI("block size too small: size=%u result=%zd", view.size(), result);
             return UNKNOWN_ERROR;
         }
         memcpy(view.data(), mDecryptDestination->unsecurePointer(), result);
@@ -546,6 +557,7 @@ status_t CCodecBufferChannel::attachEncryptedBuffer(
     std::shared_ptr<C2Buffer> c2Buffer{C2Buffer::CreateLinearBuffer(
             block->share(codecDataOffset, result - codecDataOffset, C2Fence{}))};
     if (!buffer->copy(c2Buffer)) {
+        ALOGI("buffer copy failed");
         return -ENOSYS;
     }
     return OK;
