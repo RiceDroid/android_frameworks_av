@@ -3241,7 +3241,7 @@ sp<StreamHalInterface> AudioFlinger::PlaybackThread::stream() const
 
 uint32_t AudioFlinger::PlaybackThread::activeSleepTimeUs() const
 {
-    return (uint32_t)((uint32_t)((mNormalFrameCount * 1000) / mSampleRate) * 1000);
+    return (uint32_t)((mNormalFrameCount * MICROS_PER_SECOND) / mSampleRate);
 }
 
 status_t AudioFlinger::PlaybackThread::setSyncEvent(const sp<SyncEvent>& event)
@@ -6064,12 +6064,12 @@ void AudioFlinger::MixerThread::dumpInternals_l(int fd, const Vector<String16>& 
 
 uint32_t AudioFlinger::MixerThread::idleSleepTimeUs() const
 {
-    return (uint32_t)(((mNormalFrameCount * 1000) / mSampleRate) * 1000) / 2;
+    return (uint32_t)((mNormalFrameCount * MICROS_PER_SECOND) / mSampleRate) / 2;
 }
 
 uint32_t AudioFlinger::MixerThread::suspendSleepTimeUs() const
 {
-    return (uint32_t)(((mNormalFrameCount * 1000) / mSampleRate) * 1000);
+    return (uint32_t)((mNormalFrameCount * MICROS_PER_SECOND) / mSampleRate);
 }
 
 void AudioFlinger::MixerThread::cacheParameters_l()
@@ -6538,7 +6538,7 @@ uint32_t AudioFlinger::DirectOutputThread::idleSleepTimeUs() const
 {
     uint32_t time;
     if (audio_has_proportional_frames(mFormat)) {
-        time = (uint32_t)(((mFrameCount * 1000) / mSampleRate) * 1000) / 2;
+        time = (uint32_t)((mFrameCount * MICROS_PER_SECOND) / mSampleRate) / 2;
     } else {
         time = kDirectMinSleepTimeUs;
     }
@@ -6549,7 +6549,7 @@ uint32_t AudioFlinger::DirectOutputThread::suspendSleepTimeUs() const
 {
     uint32_t time;
     if (audio_has_proportional_frames(mFormat)) {
-        time = (uint32_t)(((mFrameCount * 1000) / mSampleRate) * 1000);
+        time = (uint32_t)((mFrameCount * MICROS_PER_SECOND) / mSampleRate);
     } else {
         time = kDirectMinSleepTimeUs;
     }
