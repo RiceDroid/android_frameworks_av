@@ -2,4 +2,4 @@ service media.tuner /system/bin/mediatuner
     class main
     group media
     ioprio rt 4
-    task_profiles ProcessCapacityHigh HighPerformance
+    task_profiles ServiceCapacityLow

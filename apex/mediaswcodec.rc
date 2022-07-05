@@ -3,4 +3,4 @@ service media.swcodec /apex/com.android.media.swcodec/bin/mediaswcodec
     user mediacodec
     group camera drmrpc mediadrm
     ioprio rt 4
-    writepid /dev/cpuset/foreground/tasks
+    task_profiles ProcessCapacityHigh HighPerformance
