@@ -824,6 +824,11 @@ MediaCodec::~MediaCodec() {
     mResourceManagerProxy->removeClient();
 
     flushMediametrics();
+
+    if (mPlaybackDurationAccumulator) {
+        delete mPlaybackDurationAccumulator;
+        mPlaybackDurationAccumulator = NULL;
+    }
 }
 
 void MediaCodec::initMediametrics() {
