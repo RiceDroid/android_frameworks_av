@@ -2148,9 +2148,7 @@ void CCodec::signalSetParameters(const sp<AMessage> &msg) {
     // Prefer to pass parameters to the buffer channel, so they can be synchronized with the frames.
     // Parameter synchronization is not defined when using input surface. For now, route
     // these directly to the component.
-    if (config->mInputSurface == nullptr
-            && (property_get_bool("debug.stagefright.ccodec_delayed_params", false)
-                    || comp->getName().find("c2.android.") == 0)) {
+    if (config->mInputSurface == nullptr) {
         mChannel->setParameters(configUpdate);
     } else {
         sp<AMessage> outputFormat = config->mOutputFormat;
