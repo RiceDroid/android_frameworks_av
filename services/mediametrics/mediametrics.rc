@@ -3,4 +3,4 @@ service mediametrics /system/bin/mediametrics
     user media
     group media
     ioprio rt 4
-    task_profiles ServiceCapacityLow AudioAppPerformance
+    task_profiles ServiceCapacityLow
